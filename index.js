@@ -21,14 +21,13 @@ function fetchBookings() {
   const bookingList = document.getElementById('bookingList');
   bookingList.innerHTML = ''; // Clear current list
 
-  // Real-time listener for Firestore
   onSnapshot(collection(db, 'bookings'), (querySnapshot) => {
     bookingList.innerHTML = ''; // Clear table each time snapshot updates
 
     if (querySnapshot.empty) {
       bookingList.innerHTML = `
         <tr class="empty">
-          <td colspan="4">ยังไม่มีการจอง</td>
+          <td colspan="5">ยังไม่มีการจอง</td>
         </tr>
       `;
       return;
@@ -42,7 +41,8 @@ function fetchBookings() {
         <td>${data.room}</td>
         <td>${data.name}</td>
         <td>${data.date}</td>
-        <td>${data.time}</td>
+        <td>${data.startTime}</td>
+        <td>${data.endTime}</td>
       `;
 
       bookingList.appendChild(newRow);
