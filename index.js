@@ -1,6 +1,6 @@
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
-import { getFirestore, collection, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -28,7 +28,7 @@ function fetchBookings() {
     if (querySnapshot.empty) {
       bookingList.innerHTML = `
         <tr class="empty">
-          <td colspan="3">ยังไม่มีการจอง</td>
+          <td colspan="4">ยังไม่มีการจอง</td>
         </tr>
       `;
       return;
@@ -41,7 +41,8 @@ function fetchBookings() {
       newRow.innerHTML = `
         <td>${data.room}</td>
         <td>${data.name}</td>
-        <td>${data.date} ${data.time}</td>
+        <td>${data.date}</td>
+        <td>${data.time}</td>
       `;
 
       bookingList.appendChild(newRow);
@@ -81,7 +82,7 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     alert('บันทึกการจองสำเร็จ!');
     this.reset(); // Reset form
   } catch (error) {
-    console.error('Error adding document: ', error);
-    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+    console.error('Error adding document:', error.message);
+    alert(`เกิดข้อผิดพลาด: ${error.message}`);
   }
 });
