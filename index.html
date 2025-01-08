@@ -91,18 +91,6 @@
       text-align: center;
       color: #888;
     }
-    .delete-button {
-      background-color: #ff4d4d;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 5px 10px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    .delete-button:hover {
-      background-color: #e60000;
-    }
     @media (max-width: 600px) {
       .container {
         padding: 15px;
@@ -165,12 +153,11 @@
             <th>วันที่</th>
             <th>เวลาเริ่มต้น</th>
             <th>เวลาสิ้นสุด</th>
-            <th>การดำเนินการ</th>
           </tr>
         </thead>
         <tbody id="bookingList">
           <tr class="empty">
-            <td colspan="6">ยังไม่มีการจอง</td>
+            <td colspan="5">ยังไม่มีการจอง</td>
           </tr>
         </tbody>
       </table>
@@ -178,49 +165,5 @@
   </main>
 
   <script type="module" src="./index.js"></script>
-  <script>
-    document.getElementById('bookingForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const room = document.getElementById('room').value;
-      const name = document.getElementById('name').value;
-      const date = document.getElementById('date').value;
-      const startTime = document.getElementById('startTime').value;
-      const endTime = document.getElementById('endTime').value;
-
-      const bookingList = document.getElementById('bookingList');
-      const emptyRow = document.querySelector('.empty');
-
-      if (emptyRow) {
-        emptyRow.remove();
-      }
-
-      const row = document.createElement('tr');
-
-      row.innerHTML = `
-        <td>${room}</td>
-        <td>${name}</td>
-        <td>${date}</td>
-        <td>${startTime}</td>
-        <td>${endTime}</td>
-        <td><button class="delete-button">ลบ</button></td>
-      `;
-
-      row.querySelector('.delete-button').addEventListener('click', function() {
-        row.remove();
-
-        if (!bookingList.querySelector('tr')) {
-          const emptyRow = document.createElement('tr');
-          emptyRow.classList.add('empty');
-          emptyRow.innerHTML = '<td colspan="6">ยังไม่มีการจอง</td>';
-          bookingList.appendChild(emptyRow);
-        }
-      });
-
-      bookingList.appendChild(row);
-
-      document.getElementById('bookingForm').reset();
-    });
-  </script>
 </body>
 </html>
