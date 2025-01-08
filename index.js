@@ -1,20 +1,40 @@
 // index.js
 
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, onValue, push } from "firebase/database";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB31LuOWt2kYXWF-M4GFBr2_STNWmtwMGU",
+  authDomain: "meeting-c1e77.firebaseapp.com",
+  projectId: "meeting-c1e77",
+  storageBucket: "meeting-c1e77.appspot.com",
+  messagingSenderId: "316077175994",
+  appId: "1:316077175994:web:e4e88fa3ee354eeca87e83",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
 const bookingForm = document.getElementById("bookingForm");
 const bookingList = document.getElementById("bookingList");
 const calendar = document.getElementById("calendar");
 
-// Store bookings in localStorage
-const loadBookings = () => {
-  return JSON.parse(localStorage.getItem("bookings")) || [];
+const loadBookings = (callback) => {
+  const bookingsRef = ref(database, 'bookings');
+  onValue(bookingsRef, (snapshot) => {
+    const data = snapshot.val();
+    const bookings = data ? Object.values(data) : [];
+    callback(bookings);
+  });
 };
 
-const saveBookings = (bookings) => {
-  localStorage.setItem("bookings", JSON.stringify(bookings));
+const saveBooking = (newBooking) => {
+  const bookingsRef = ref(database, 'bookings');
+  push(bookingsRef, newBooking);
 };
 
-const renderTable = () => {
-  const bookings = loadBookings();
+const renderTable = (bookings) => {
   const currentMonth = new Date().getMonth();
   const filteredBookings = bookings.filter((booking) => {
     const bookingDate = new Date(booking.date);
@@ -41,8 +61,7 @@ const renderTable = () => {
   });
 };
 
-const renderCalendar = () => {
-  const bookings = loadBookings();
+const renderCalendar = (bookings) => {
   const currentMonth = new Date().getMonth();
   const daysInMonth = new Date(new Date().getFullYear(), currentMonth + 1, 0).getDate();
 
@@ -83,18 +102,14 @@ bookingForm.addEventListener("submit", (event) => {
   }
 
   const newBooking = { room, name, date, startTime, endTime };
-
-  const bookings = loadBookings();
-  bookings.push(newBooking);
-  saveBookings(bookings);
+  saveBooking(newBooking);
 
   bookingForm.reset();
-  renderTable();
-  renderCalendar();
-
   alert("การจองสำเร็จ!");
 });
 
 // Initial rendering
-renderTable();
-renderCalendar();
+loadBookings((bookings) => {
+  renderTable(bookings);
+  renderCalendar(bookings);
+});
