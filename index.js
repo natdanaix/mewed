@@ -1,7 +1,6 @@
 // Import Firebase และ Firestore
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
 import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
-import { Calendar } from "https://cdn.jsdelivr.net/npm/fullcalendar@6.1.6/main.min.js";
 
 // Firebase Configuration
 const firebaseConfig = {
@@ -111,35 +110,5 @@ async function loadBookings() {
   });
 }
 
-// ฟังก์ชันสำหรับแสดงปฏิทิน
-async function loadCalendar() {
-  const calendarEl = document.getElementById("calendar");
-  const calendar = new Calendar(calendarEl, {
-    initialView: "dayGridMonth",
-    locale: "th", // ตั้งค่าให้รองรับภาษาไทย
-    events: async function(fetchInfo, successCallback, failureCallback) {
-      try {
-        const querySnapshot = await getDocs(collection(db, "bookings"));
-        const events = querySnapshot.docs.map(doc => {
-          const booking = doc.data();
-          return {
-            title: `${booking.room} - ${booking.name}`,
-            start: `${booking.date}T${booking.startTime}`,
-            end: `${booking.date}T${booking.endTime}`
-          };
-        });
-        successCallback(events);
-      } catch (error) {
-        console.error("Error loading calendar events:", error);
-        failureCallback(error);
-      }
-    }
-  });
-  calendar.render();
-}
-
-// โหลดข้อมูลเมื่อโหลดหน้า
-window.onload = () => {
-  loadBookings();
-  loadCalendar();
-};
+// โหลดรายการจองเมื่อโหลดหน้า
+window.onload = loadBookings;
