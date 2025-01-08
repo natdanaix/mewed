@@ -1,33 +1,86 @@
-import { saveBookingToFirebase, loadBookingsFromFirebase } from './firebase.js';
+<script>
+  // Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB31LuOWt2kYXWF-M4GFBr2_STNWmtwMGU",
+    authDomain: "meeting-c1e77.firebaseapp.com",
+    databaseURL: "https://meeting-c1e77-default-rtdb.firebaseio.com",
+    projectId: "meeting-c1e77",
+    storageBucket: "meeting-c1e77.appspot.com",
+    messagingSenderId: "316077175994",
+    appId: "1:316077175994:web:e4e88fa3ee354eeca87e83"
+  };
 
-// จัดการฟอร์มการจอง
-const bookingForm = document.getElementById('bookingForm');
-const bookingList = document.getElementById('bookingList');
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
 
-// โหลดข้อมูลการจองเมื่อหน้าเว็บโหลดเสร็จ
-loadBookingsFromFirebase(bookingList);
+  // Save Booking to Firebase
+  function saveBookingToFirebase(room, name, time) {
+    const bookingsRef = database.ref('bookings/');
+    bookingsRef.push({ room, name, time });
+  }
 
-// ฟังการส่งฟอร์มและบันทึกการจอง
-bookingForm.addEventListener('submit', function (e) {
-  e.preventDefault();
+  // Load Bookings from Firebase
+  function loadBookingsFromFirebase(bookingListElement) {
+    const bookingsRef = database.ref('bookings/');
+    bookingsRef.on('value', (snapshot) => {
+      const bookings = snapshot.val();
 
-  // ดึงค่าจากฟอร์ม
-  const room = document.getElementById('room').value;
-  const name = document.getElementById('name').value;
-  const time = document.getElementById('time').value;
+      // Clear the current booking list
+      bookingListElement.innerHTML = '';
 
-  // บันทึกข้อมูลการจองไปที่ Firebase
-  saveBookingToFirebase(room, name, time);
+      // Display bookings
+      if (bookings) {
+        for (let key in bookings) {
+          const { room, name, time } = bookings[key];
+          const newRow = document.createElement('tr');
+          newRow.innerHTML = `
+            <td>${room}</td>
+            <td>${name}</td>
+            <td>${time}</td>
+          `;
+          bookingListElement.appendChild(newRow);
+        }
+      } else {
+        bookingListElement.innerHTML = `
+          <tr class="empty">
+            <td colspan="3">ยังไม่มีการจอง</td>
+          </tr>
+        `;
+      }
+    });
+  }
 
-  // เพิ่มแถวในตารางทันที
-  const newRow = document.createElement('tr');
-  newRow.innerHTML = `
-    <td>${room}</td>
-    <td>${name}</td>
-    <td>${time}</td>
-  `;
-  bookingList.appendChild(newRow);
+  // Event Listener for Booking Form
+  document.addEventListener('DOMContentLoaded', () => {
+    const bookingForm = document.getElementById('bookingForm');
+    const bookingList = document.getElementById('bookingList');
 
-  // ล้างข้อมูลในฟอร์ม
-  bookingForm.reset();
-});
+    // Load bookings when the page loads
+    loadBookingsFromFirebase(bookingList);
+
+    // Handle form submission
+    bookingForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const room = document.getElementById('room').value;
+      const name = document.getElementById('name').value;
+      const time = document.getElementById('time').value;
+
+      // Save booking to Firebase
+      saveBookingToFirebase(room, name, time);
+
+      // Add the booking immediately to the table
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>${room}</td>
+        <td>${name}</td>
+        <td>${time}</td>
+      `;
+      bookingList.appendChild(newRow);
+
+      // Clear the form
+      bookingForm.reset();
+    });
+  });
+</script>
