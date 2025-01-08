@@ -1,8 +1,8 @@
-// index.js
+// Import Firebase และ Firestore
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+import { addDoc, collection, getDocs, getFirestore, query, where } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, push } from "firebase/database";
-
+// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB31LuOWt2kYXWF-M4GFBr2_STNWmtwMGU",
   authDomain: "meeting-c1e77.firebaseapp.com",
@@ -12,83 +12,100 @@ const firebaseConfig = {
   appId: "1:316077175994:web:e4e88fa3ee354eeca87e83",
 };
 
-// Initialize Firebase
+// Initialize Firebase และ Firestore
 const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+const db = getFirestore(app);
 
-const bookingForm = document.getElementById("bookingForm");
-const bookingList = document.getElementById("bookingList");
-const calendar = document.getElementById("calendar");
+// ฟังก์ชันช่วย: สร้าง HTML สำหรับปฏิทิน
+function createDayElement(day, bookingInfo) {
+  const dayElement = document.createElement("div");
+  dayElement.classList.add("calendar-day");
 
-const loadBookings = (callback) => {
-  const bookingsRef = ref(database, 'bookings');
-  onValue(bookingsRef, (snapshot) => {
-    const data = snapshot.val();
-    const bookings = data ? Object.values(data) : [];
-    callback(bookings);
-  });
-};
+  dayElement.innerHTML = `
+    <div class="date">${day}</div>
+    <div class="booking-info">${bookingInfo}</div>
+  `;
 
-const saveBooking = (newBooking) => {
-  const bookingsRef = ref(database, 'bookings');
-  push(bookingsRef, newBooking);
-};
+  return dayElement;
+}
 
-const renderTable = (bookings) => {
-  const currentMonth = new Date().getMonth();
-  const filteredBookings = bookings.filter((booking) => {
-    const bookingDate = new Date(booking.date);
-    return bookingDate.getMonth() === currentMonth;
-  });
+// ฟังก์ชันสร้างปฏิทิน
+async function generateCalendar() {
+  const calendar = document.getElementById("calendar");
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  bookingList.innerHTML = "";
+  calendar.innerHTML = ""; // ล้างข้อมูลเดิมในปฏิทิน
 
-  if (filteredBookings.length === 0) {
-    bookingList.innerHTML = `<tr class="empty"><td colspan="5">ยังไม่มีการจอง</td></tr>`;
-    return;
+  try {
+    // ดึงข้อมูลการจองทั้งหมดจาก Firestore
+    const querySnapshot = await getDocs(collection(db, "bookings"));
+    const bookings = {};
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const date = data.date;
+      if (!bookings[date]) bookings[date] = [];
+      bookings[date].push(data.name);
+    });
+
+    // สร้างวันในปฏิทิน
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const bookingInfo = bookings[dateStr]
+        ? bookings[dateStr].map((name) => `<div>${name}</div>`).join("")
+        : "<div>ไม่มีการจอง</div>";
+
+      const dayElement = createDayElement(day, bookingInfo);
+      calendar.appendChild(dayElement);
+    }
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการสร้างปฏิทิน: ", error);
+    alert("ไม่สามารถโหลดปฏิทินได้ โปรดลองอีกครั้ง");
   }
+}
 
-  filteredBookings.forEach((booking) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${booking.room}</td>
-      <td>${booking.name}</td>
-      <td>${booking.date}</td>
-      <td>${booking.startTime}</td>
-      <td>${booking.endTime}</td>
-    `;
-    bookingList.appendChild(row);
-  });
-};
+// ฟังก์ชันโหลดรายการจองในตาราง
+async function loadBookings() {
+  const bookingTableBody = document.getElementById("bookingList");
+  bookingTableBody.innerHTML = ""; // ล้างข้อมูลเดิมในตาราง
 
-const renderCalendar = (bookings) => {
-  const currentMonth = new Date().getMonth();
-  const daysInMonth = new Date(new Date().getFullYear(), currentMonth + 1, 0).getDate();
+  try {
+    const querySnapshot = await getDocs(collection(db, "bookings"));
 
-  calendar.innerHTML = "";
+    if (querySnapshot.empty) {
+      const emptyRow = document.createElement("tr");
+      emptyRow.classList.add("empty");
+      emptyRow.innerHTML = `<td colspan="5">ยังไม่มีการจอง</td>`;
+      bookingTableBody.appendChild(emptyRow);
+      return;
+    }
 
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dayContainer = document.createElement("div");
-    dayContainer.classList.add("calendar-day");
-    const date = new Date(new Date().getFullYear(), currentMonth, day).toISOString().split("T")[0];
+    querySnapshot.forEach((doc) => {
+      const booking = doc.data();
+      const row = document.createElement("tr");
 
-    const bookingsForDay = bookings.filter((booking) => booking.date === date);
+      row.innerHTML = `
+        <td>${booking.room}</td>
+        <td>${booking.name}</td>
+        <td>${booking.date}</td>
+        <td>${booking.startTime}</td>
+        <td>${booking.endTime}</td>
+      `;
 
-    dayContainer.innerHTML = `
-      <div class="date">${day}</div>
-      ${bookingsForDay
-        .map(
-          (booking) => `<div class="booking-info">${booking.room} - ${booking.startTime} ถึง ${booking.endTime}</div>`
-        )
-        .join("")}
-    `;
-
-    calendar.appendChild(dayContainer);
+      bookingTableBody.appendChild(row);
+    });
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการโหลดรายการจอง: ", error);
+    alert("ไม่สามารถโหลดข้อมูลการจองได้ โปรดลองอีกครั้ง");
   }
-};
+}
 
-bookingForm.addEventListener("submit", (event) => {
-  event.preventDefault();
+// ฟังก์ชันจัดการการส่งฟอร์ม
+document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
   const room = document.getElementById("room").value;
   const name = document.getElementById("name").value;
@@ -96,20 +113,63 @@ bookingForm.addEventListener("submit", (event) => {
   const startTime = document.getElementById("startTime").value;
   const endTime = document.getElementById("endTime").value;
 
-  if (!room || !name || !date || !startTime || !endTime) {
-    alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-    return;
+  try {
+    // ตรวจสอบการจองซ้ำ
+    const isDuplicate = await checkDuplicateBooking(room, date, startTime, endTime);
+
+    if (isDuplicate) {
+      alert("ห้องประชุมในช่วงเวลานี้ถูกจองไว้แล้ว กรุณาเลือกช่วงเวลาอื่น");
+    } else {
+      // เพิ่มข้อมูลการจองใหม่
+      await addDoc(collection(db, "bookings"), {
+        room,
+        name,
+        date,
+        startTime,
+        endTime,
+      });
+
+      alert("จองสำเร็จ!");
+      await loadBookings(); // โหลดรายการจองใหม่
+      await generateCalendar(); // อัปเดตปฏิทิน
+    }
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการจอง: ", error);
+    alert("ไม่สามารถจองได้ โปรดลองอีกครั้ง");
   }
-
-  const newBooking = { room, name, date, startTime, endTime };
-  saveBooking(newBooking);
-
-  bookingForm.reset();
-  alert("การจองสำเร็จ!");
 });
 
-// Initial rendering
-loadBookings((bookings) => {
-  renderTable(bookings);
-  renderCalendar(bookings);
-});
+// ฟังก์ชันตรวจสอบการจองซ้ำ
+async function checkDuplicateBooking(room, date, startTime, endTime) {
+  const bookingQuery = query(
+    collection(db, "bookings"),
+    where("room", "==", room),
+    where("date", "==", date)
+  );
+
+  try {
+    const querySnapshot = await getDocs(bookingQuery);
+    let isDuplicate = false;
+
+    querySnapshot.forEach((doc) => {
+      const booking = doc.data();
+      const existingStartTime = booking.startTime;
+      const existingEndTime = booking.endTime;
+
+      if (startTime < existingEndTime && endTime > existingStartTime) {
+        isDuplicate = true;
+      }
+    });
+
+    return isDuplicate;
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการตรวจสอบการจองซ้ำ: ", error);
+    return false;
+  }
+}
+
+// โหลดปฏิทินและรายการจองเมื่อโหลดหน้า
+window.onload = async () => {
+  await loadBookings();
+  await generateCalendar();
+};
