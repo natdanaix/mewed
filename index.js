@@ -60,12 +60,19 @@ document.getElementById('bookingForm').addEventListener('submit', async function
   // Get form values
   const room = document.getElementById('room').value;
   const name = document.getElementById('name').value;
-  const time = document.getElementById('time').value;
   const date = document.getElementById('date').value;
+  const startTime = document.getElementById('startTime').value;
+  const endTime = document.getElementById('endTime').value;
 
   // Validate input
-  if (!room || !name || !time || !date) {
+  if (!room || !name || !date || !startTime || !endTime) {
     alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    return;
+  }
+
+  // Check if start time is before end time
+  if (startTime >= endTime) {
+    alert('เวลาเริ่มต้นต้องน้อยกว่าเวลาสิ้นสุด');
     return;
   }
 
@@ -74,8 +81,9 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     await addDoc(collection(db, 'bookings'), {
       room,
       name,
-      time,
       date,
+      startTime,
+      endTime,
       createdAt: new Date().toISOString(),
     });
 
@@ -86,3 +94,4 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     alert(`เกิดข้อผิดพลาด: ${error.message}`);
   }
 });
+
