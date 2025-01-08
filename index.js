@@ -1,8 +1,8 @@
-// Firebase Configuration
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+// Import Firebase modules
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
 
-// กำหนดค่า Firebase Config
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB31LuOWt2kYXWF-M4GFBr2_STNWmtwMGU",
   authDomain: "meeting-c1e77.firebaseapp.com",
@@ -16,66 +16,57 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// บันทึกข้อมูลการจองไปยัง Firestore
-export async function saveBookingToFirestore(room, name, time) {
-  try {
-    const bookingsRef = collection(db, "bookings");
-    await addDoc(bookingsRef, { room, name, time });
-    console.log("Booking added successfully!");
-  } catch (error) {
-    console.error("Error adding booking:", error);
+// Handle form submission
+document.getElementById('bookingForm').addEventListener('submit', async function (event) {
+  event.preventDefault();
+
+  // Get form values
+  const room = document.getElementById('room').value;
+  const name = document.getElementById('name').value;
+  const time = document.getElementById('time').value;
+  const date = document.getElementById('date').value;
+
+  // Validate input
+  if (!room || !name || !time || !date) {
+    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    return;
   }
-}
 
-// โหลดข้อมูลการจองจาก Firestore
-export function loadBookingsFromFirestore(bookingListElement) {
-  const bookingsRef = collection(db, "bookings");
+  try {
+    // Save booking to Firebase
+    const docRef = await addDoc(collection(db, 'bookings'), {
+      room,
+      name,
+      time,
+      date,
+      createdAt: new Date().toISOString(),
+    });
 
-  onSnapshot(bookingsRef, (snapshot) => {
-    // ล้างข้อมูลในตารางก่อน
-    bookingListElement.innerHTML = "";
+    console.log('Document written with ID: ', docRef.id);
+    alert('บันทึกการจองสำเร็จ!');
 
-    if (snapshot.empty) {
-      bookingListElement.innerHTML = `
-        <tr class="empty">
-          <td colspan="3">ยังไม่มีการจอง</td>
-        </tr>
-      `;
-    } else {
-      snapshot.forEach((doc) => {
-        const { room, name, time } = doc.data();
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `
-          <td>${room}</td>
-          <td>${name}</td>
-          <td>${time}</td>
-        `;
-        bookingListElement.appendChild(newRow);
-      });
+    // Add new booking to the table
+    const bookingList = document.getElementById('bookingList');
+    const newRow = document.createElement('tr');
+
+    newRow.innerHTML = `
+      <td>${room}</td>
+      <td>${name}</td>
+      <td>${date} ${time}</td>
+    `;
+
+    // Remove "ยังไม่มีการจอง" row if exists
+    const emptyRow = bookingList.querySelector('.empty');
+    if (emptyRow) {
+      emptyRow.remove();
     }
-  });
-}
 
-// ฟังก์ชันการจัดการ DOM
-document.addEventListener("DOMContentLoaded", () => {
-  const bookingForm = document.getElementById("bookingForm");
-  const bookingList = document.getElementById("bookingList");
+    bookingList.appendChild(newRow);
 
-  // โหลดข้อมูลการจอง
-  loadBookingsFromFirestore(bookingList);
-
-  // จัดการการส่งฟอร์ม
-  bookingForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const room = document.getElementById("room").value;
-    const name = document.getElementById("name").value;
-    const time = document.getElementById("time").value;
-
-    // บันทึกข้อมูลการจองไปยัง Firestore
-    saveBookingToFirestore(room, name, time);
-
-    // ล้างฟอร์มหลังการส่ง
-    bookingForm.reset();
-  });
+    // Reset form
+    this.reset();
+  } catch (error) {
+    console.error('Error adding document: ', error);
+    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+  }
 });
