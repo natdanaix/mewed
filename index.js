@@ -59,39 +59,45 @@ document.addEventListener('DOMContentLoaded', fetchBookings);
 document.addEventListener('DOMContentLoaded', () => {
   const calendarEl = document.getElementById('calendar');
 
-  // กำหนดค่าปฏิทิน
+  // สร้างปฏิทิน
   const calendar = new Calendar(calendarEl, {
-    initialView: 'dayGridMonth', // เริ่มต้นที่มุมมองเดือน
+    initialView: 'dayGridMonth', // แสดงมุมมองแบบเดือน
     locale: 'th', // ตั้งค่าภาษาไทย
     headerToolbar: {
-      left: 'prev,next today', // ปุ่มควบคุมด้านซ้าย
-      center: 'title', // แสดงชื่อเดือน
-      right: '' // ซ่อนปุ่มเปลี่ยนมุมมอง
+      left: 'prev,next today', // ปุ่มย้อนกลับ ถัดไป และวันนี้
+      center: 'title', // ชื่อเดือน
+      right: '' // ซ่อนปุ่มเปลี่ยนมุมมองอื่น
     },
-    events: [], // เพิ่มข้อมูลการจองที่นี่
+    events: [] // จองกิจกรรม
   });
 
   calendar.render();
 
+  // จัดการฟอร์มการจอง
   const bookingForm = document.getElementById('bookingForm');
   bookingForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    // รับค่าจากฟอร์ม
     const room = document.getElementById('room').value;
     const name = document.getElementById('name').value;
     const date = document.getElementById('date').value;
     const startTime = document.getElementById('startTime').value;
     const endTime = document.getElementById('endTime').value;
 
-    if (!room || !name || !date || !startTime || !endTime) return alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    if (!room || !name || !date || !startTime || !endTime) {
+      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
 
     const start = `${date}T${startTime}`;
     const end = `${date}T${endTime}`;
 
+    // เพิ่มกิจกรรมลงในปฏิทิน
     calendar.addEvent({
       title: `${room} - ${name}`,
       start,
-      end,
+      end
     });
 
     alert('การจองสำเร็จ!');
