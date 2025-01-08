@@ -11,18 +11,15 @@
       padding: 0;
       background-color: #f4f4f9;
     }
-
     header {
       background-color: #4CAF50;
       color: white;
       text-align: center;
       padding: 1rem 0;
     }
-
     main {
       padding: 20px;
     }
-
     .container {
       max-width: 800px;
       margin: 0 auto;
@@ -31,20 +28,13 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
     .form-group {
       margin-bottom: 15px;
     }
-
     .form-group label {
       display: block;
       margin-bottom: 5px;
     }
-
     .form-group input,
     .form-group select {
       width: 100%;
@@ -52,7 +42,6 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-
     button {
       background-color: #4CAF50;
       color: white;
@@ -61,27 +50,22 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #45a049;
     }
-
     .booking-table {
       margin-top: 30px;
       width: 100%;
       border-collapse: collapse;
     }
-
     .booking-table th, .booking-table td {
       border: 1px solid #ddd;
       padding: 8px;
     }
-
     .booking-table th {
       background-color: #f2f2f2;
       text-align: left;
     }
-
     .empty {
       text-align: center;
       color: #888;
@@ -96,7 +80,6 @@
   <main>
     <div class="container">
       <h2>จองห้องประชุม</h2>
-
       <form id="bookingForm">
         <div class="form-group">
           <label for="room">เลือกห้องประชุม:</label>
@@ -107,20 +90,16 @@
             <option value="ห้อง C">ห้อง C</option>
           </select>
         </div>
-
         <div class="form-group">
           <label for="name">ชื่อผู้จอง:</label>
           <input type="text" id="name" placeholder="กรอกชื่อ" required>
         </div>
-
         <div class="form-group">
           <label for="time">เวลาที่ต้องการจอง:</label>
           <input type="time" id="time" required>
         </div>
-
         <button type="submit">ยืนยันการจอง</button>
       </form>
-
       <h2>รายการจอง</h2>
       <table class="booking-table">
         <thead>
@@ -143,7 +122,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database.js"></script>
 
-  <!-- Firebase and App Logic -->
   <script>
     // Firebase Configuration
     const firebaseConfig = {
@@ -171,20 +149,13 @@
       const bookingsRef = database.ref('bookings/');
       bookingsRef.on('value', (snapshot) => {
         const bookings = snapshot.val();
-
-        // Clear the current booking list
         bookingListElement.innerHTML = '';
 
-        // Display bookings
         if (bookings) {
           for (let key in bookings) {
             const { room, name, time } = bookings[key];
             const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-              <td>${room}</td>
-              <td>${name}</td>
-              <td>${time}</td>
-            `;
+            newRow.innerHTML = `<td>${room}</td><td>${name}</td><td>${time}</td>`;
             bookingListElement.appendChild(newRow);
           }
         } else {
@@ -197,15 +168,13 @@
       });
     }
 
-    // Event Listener for Booking Form
+    // Initialize App
     document.addEventListener('DOMContentLoaded', () => {
       const bookingForm = document.getElementById('bookingForm');
       const bookingList = document.getElementById('bookingList');
 
-      // Load bookings when the page loads
       loadBookingsFromFirebase(bookingList);
 
-      // Handle form submission
       bookingForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -213,19 +182,8 @@
         const name = document.getElementById('name').value;
         const time = document.getElementById('time').value;
 
-        // Save booking to Firebase
         saveBookingToFirebase(room, name, time);
 
-        // Add the booking immediately to the table
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-          <td>${room}</td>
-          <td>${name}</td>
-          <td>${time}</td>
-        `;
-        bookingList.appendChild(newRow);
-
-        // Clear the form
         bookingForm.reset();
       });
     });
