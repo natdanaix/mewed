@@ -17,61 +17,42 @@
       text-align: center;
       padding: 1rem 0;
     }
-    main {
-      padding: 20px;
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background-color: #ddd;
+    }
+    .tab {
+      padding: 1rem 2rem;
+      cursor: pointer;
+      text-align: center;
+      background-color: #f4f4f9;
+    }
+    .tab.active {
+      background-color: white;
+      border-top: 3px solid #4CAF50;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
     }
     .container {
       max-width: 800px;
-      margin: 0 auto;
+      margin: 20px auto;
       background: white;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    h1, h2 {
-      margin-bottom: 20px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .booking-table {
-      margin-top: 30px;
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .booking-table th, .booking-table td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-    .booking-table th {
-      background-color: #f2f2f2;
-      text-align: left;
-    }
-    .empty {
+    .calendar {
       text-align: center;
-      color: #888;
+    }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
     }
   </style>
 </head>
@@ -80,11 +61,18 @@
     <h1>ระบบจองห้องประชุม</h1>
   </header>
 
-  <main>
-    <div class="container">
-      <h2>จองห้องประชุม</h2>
+  <!-- แถบแท็บ -->
+  <div class="tabs">
+    <div class="tab active" data-tab="booking">จองห้องประชุม</div>
+    <div class="tab" data-tab="calendar">ปฏิทิน</div>
+  </div>
 
-      <!-- ฟอร์มการจอง -->
+  <!-- เนื้อหาแท็บ -->
+  <div class="container">
+    <!-- แท็บจองห้องประชุม -->
+    <div class="tab-content active" id="booking">
+      <h2>จองห้องประชุม</h2>
+      <!-- เนื้อหาเดิมที่คุณมีสำหรับการจอง -->
       <form id="bookingForm">
         <div class="form-group">
           <label for="room">เลือกห้องประชุม:</label>
@@ -113,29 +101,34 @@
         </div>
         <button type="submit">ยืนยันการจอง</button>
       </form>
-
-      <!-- ตารางการจอง -->
-      <h2>รายการจอง</h2>
-      <table class="booking-table">
-        <thead>
-          <tr>
-            <th>ห้องประชุม</th>
-            <th>ชื่อผู้จอง</th>
-            <th>วันที่</th>
-            <th>เวลาเริ่มต้น</th>
-            <th>เวลาสิ้นสุด</th>
-          </tr>
-        </thead>
-        <tbody id="bookingList">
-          <tr class="empty">
-            <td colspan="5">ยังไม่มีการจอง</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
-  </main>
 
-  <!-- Import Firebase App and Firestore -->
-  <script type="module" src="./index.js"></script>
+    <!-- แท็บปฏิทิน -->
+    <div class="tab-content" id="calendar">
+      <h2>ปฏิทิน</h2>
+      <div class="calendar">
+        <!-- ใช้ iframe สำหรับปฏิทิน -->
+        <iframe src="https://calendar.google.com/calendar/embed?src=your_calendar_id&ctz=Asia/Bangkok"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // การทำงานของแท็บ
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // เอา active ออกจากทุกแท็บและแท็บเนื้อหา
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        // เพิ่ม active ไปยังแท็บที่ถูกคลิก
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
