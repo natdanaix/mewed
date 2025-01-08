@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบจองห้องประชุม</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -101,7 +102,7 @@
         </div>
         <div class="form-group">
           <label for="date">วันที่ที่ต้องการจอง:</label>
-          <input type="date" id="date" required>
+          <input type="text" id="date" placeholder="เลือกวันที่" required>
         </div>
         <div class="form-group">
           <label for="startTime">เวลาเริ่มต้น:</label>
@@ -135,7 +136,7 @@
     </div>
   </main>
 
-  <!-- Import Firebase App and Firestore -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script type="module" src="./index.js"></script>
 </body>
 </html>
