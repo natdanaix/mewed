@@ -1,92 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบจองห้องประชุม</title>
-  <script type="module">
-    import { saveBookingToFirebase, loadBookingsFromFirebase } from './firebase.js';
+import { saveBookingToFirebase, loadBookingsFromFirebase } from './firebase.js';
 
-    // จัดการฟอร์มและข้อมูล
-    const bookingForm = document.getElementById('bookingForm');
-    const bookingList = document.getElementById('bookingList');
+// จัดการฟอร์มการจอง
+const bookingForm = document.getElementById('bookingForm');
+const bookingList = document.getElementById('bookingList');
 
-    // โหลดข้อมูลการจอง
-    loadBookingsFromFirebase(bookingList);
+// โหลดข้อมูลการจองเมื่อหน้าเว็บโหลดเสร็จ
+loadBookingsFromFirebase(bookingList);
 
-    // จัดการการส่งฟอร์ม
-    bookingForm.addEventListener('submit', function (e) {
-      e.preventDefault();
+// ฟังการส่งฟอร์มและบันทึกการจอง
+bookingForm.addEventListener('submit', function (e) {
+  e.preventDefault();
 
-      const room = document.getElementById('room').value;
-      const name = document.getElementById('name').value;
-      const time = document.getElementById('time').value;
+  // ดึงค่าจากฟอร์ม
+  const room = document.getElementById('room').value;
+  const name = document.getElementById('name').value;
+  const time = document.getElementById('time').value;
 
-      // บันทึกการจองไปที่ Firebase
-      saveBookingToFirebase(room, name, time);
+  // บันทึกข้อมูลการจองไปที่ Firebase
+  saveBookingToFirebase(room, name, time);
 
-      // เพิ่มข้อมูลใหม่ในตาราง (ในหน้าเว็บทันที)
-      const newRow = document.createElement('tr');
-      newRow.innerHTML = `
-        <td>${room}</td>
-        <td>${name}</td>
-        <td>${time}</td>
-      `;
-      bookingList.appendChild(newRow);
+  // เพิ่มแถวในตารางทันที
+  const newRow = document.createElement('tr');
+  newRow.innerHTML = `
+    <td>${room}</td>
+    <td>${name}</td>
+    <td>${time}</td>
+  `;
+  bookingList.appendChild(newRow);
 
-      // ล้างฟอร์ม
-      bookingForm.reset();
-    });
-  </script>
-</head>
-<body>
-  <header>
-    <h1>ระบบจองห้องประชุม</h1>
-  </header>
-
-  <main>
-    <div class="container">
-      <h2>จองห้องประชุม</h2>
-      <form id="bookingForm">
-        <div class="form-group">
-          <label for="room">เลือกห้องประชุม:</label>
-          <select id="room" required>
-            <option value="">-- กรุณาเลือก --</option>
-            <option value="ห้อง A">ห้อง A</option>
-            <option value="ห้อง B">ห้อง B</option>
-            <option value="ห้อง C">ห้อง C</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="name">ชื่อผู้จอง:</label>
-          <input type="text" id="name" placeholder="กรอกชื่อ" required>
-        </div>
-
-        <div class="form-group">
-          <label for="time">เวลาที่ต้องการจอง:</label>
-          <input type="time" id="time" required>
-        </div>
-
-        <button type="submit">ยืนยันการจอง</button>
-      </form>
-
-      <h2>รายการจอง</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>ห้องประชุม</th>
-            <th>ชื่อผู้จอง</th>
-            <th>เวลา</th>
-          </tr>
-        </thead>
-        <tbody id="bookingList">
-          <tr class="empty">
-            <td colspan="3">ยังไม่มีการจอง</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </main>
-</body>
-</html>
+  // ล้างข้อมูลในฟอร์ม
+  bookingForm.reset();
+});
