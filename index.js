@@ -17,15 +17,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // บันทึกข้อมูลการจองไปยัง Firestore
-export async function saveBookingToFirestore(room, name, time) {
+export async function saveBookingToFirestore(room, name, date, time) {
   try {
     const bookingsRef = collection(db, "bookings");
-    await addDoc(bookingsRef, { room, name, time });
+    await addDoc(bookingsRef, { room, name, date, time });
     console.log("Booking added successfully!");
   } catch (error) {
     console.error("Error adding booking:", error);
   }
 }
+
 
 // โหลดข้อมูลการจองจาก Firestore
 export function loadBookingsFromFirestore(bookingListElement) {
@@ -38,16 +39,17 @@ export function loadBookingsFromFirestore(bookingListElement) {
     if (snapshot.empty) {
       bookingListElement.innerHTML = `
         <tr class="empty">
-          <td colspan="3">ยังไม่มีการจอง</td>
+          <td colspan="4">ยังไม่มีการจอง</td>
         </tr>
       `;
     } else {
       snapshot.forEach((doc) => {
-        const { room, name, time } = doc.data();
+        const { room, name, date, time } = doc.data();
         const newRow = document.createElement("tr");
         newRow.innerHTML = `
           <td>${room}</td>
           <td>${name}</td>
+          <td>${date}</td>
           <td>${time}</td>
         `;
         bookingListElement.appendChild(newRow);
@@ -55,6 +57,7 @@ export function loadBookingsFromFirestore(bookingListElement) {
     }
   });
 }
+
 
 // ฟังก์ชันการจัดการ DOM
 document.addEventListener("DOMContentLoaded", () => {
