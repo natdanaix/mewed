@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบจองห้องประชุม</title>
   <style>
+    /* CSS ยังคงเหมือนเดิม */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -100,7 +101,11 @@
           <input type="text" id="name" placeholder="กรอกชื่อ" required>
         </div>
         <div class="form-group">
-          <label for="time">เวลาที่ต้องการจอง:</label>
+          <label for="date">วันที่:</label>
+          <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+          <label for="time">เวลา:</label>
           <input type="time" id="time" required>
         </div>
         <button type="submit">ยืนยันการจอง</button>
@@ -113,12 +118,13 @@
           <tr>
             <th>ห้องประชุม</th>
             <th>ชื่อผู้จอง</th>
+            <th>วันที่</th>
             <th>เวลา</th>
           </tr>
         </thead>
         <tbody id="bookingList">
           <tr class="empty">
-            <td colspan="3">ยังไม่มีการจอง</td>
+            <td colspan="4">ยังไม่มีการจอง</td>
           </tr>
         </tbody>
       </table>
