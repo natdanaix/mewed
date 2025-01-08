@@ -1,33 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เว็บไซต์แรกของฉัน</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 1rem;
-        }
-        section {
-            padding: 2rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบจองห้องประชุม</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .booking-table {
+      margin-top: 30px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .booking-table th, .booking-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    .booking-table th {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+
+    .empty {
+      text-align: center;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>ยินดีต้อนรับสู่เว็บไซต์ของฉัน</h1>
-    </header>
-    <section>
-        <p>นี่คือเว็บไซต์ตัวอย่างที่สร้างขึ้นง่ายๆ</p>
-        <button onclick="alert('สวัสดี!')">คลิกที่นี่</button>
-    </section>
+  <header>
+    <h1>ระบบจองห้องประชุม</h1>
+  </header>
+
+  <main>
+    <div class="container">
+      <h2>จองห้องประชุม</h2>
+
+      <!-- แบบฟอร์มการจอง -->
+      <form id="bookingForm">
+        <div class="form-group">
+          <label for="room">เลือกห้องประชุม:</label>
+          <select id="room" required>
+            <option value="">-- กรุณาเลือก --</option>
+            <option value="ห้อง A">ห้อง A</option>
+            <option value="ห้อง B">ห้อง B</option>
+            <option value="ห้อง C">ห้อง C</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="name">ชื่อผู้จอง:</label>
+          <input type="text" id="name" placeholder="กรอกชื่อ" required>
+        </div>
+
+        <div class="form-group">
+          <label for="time">เวลาที่ต้องการจอง:</label>
+          <input type="time" id="time" required>
+        </div>
+
+        <button type="submit">ยืนยันการจอง</button>
+      </form>
+
+      <!-- ตารางเวลาที่จองแล้ว -->
+      <h2>รายการจอง</h2>
+      <table class="booking-table">
+        <thead>
+          <tr>
+            <th>ห้องประชุม</th>
+            <th>ชื่อผู้จอง</th>
+            <th>เวลา</th>
+          </tr>
+        </thead>
+        <tbody id="bookingList">
+          <tr class="empty">
+            <td colspan="3">ยังไม่มีการจอง</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // จัดการแบบฟอร์มการจอง
+    const bookingForm = document.getElementById('bookingForm');
+    const bookingList = document.getElementById('bookingList');
+
+    bookingForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // ดึงค่าจากฟอร์ม
+      const room = document.getElementById('room').value;
+      const name = document.getElementById('name').value;
+      const time = document.getElementById('time').value;
+
+      // เพิ่มรายการจองลงในตาราง
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>${room}</td>
+        <td>${name}</td>
+        <td>${time}</td>
+      `;
+      bookingList.appendChild(newRow);
+
+      // ลบแถว "ยังไม่มีการจอง" หากมีการจอง
+      const emptyRow = document.querySelector('.empty');
+      if (emptyRow) {
+        emptyRow.remove();
+      }
+
+      // ล้างข้อมูลในฟอร์ม
+      bookingForm.reset();
+    });
+  </script>
 </body>
 </html>
