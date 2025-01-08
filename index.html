@@ -4,89 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบจองห้องประชุม</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f9;
-    }
+  <script type="module">
+    import { saveBookingToFirebase, loadBookingsFromFirebase } from './firebase.js';
 
-    header {
-      background-color: #4CAF50;
-      color: white;
-      text-align: center;
-      padding: 1rem 0;
-    }
+    // จัดการฟอร์มและข้อมูล
+    const bookingForm = document.getElementById('bookingForm');
+    const bookingList = document.getElementById('bookingList');
 
-    main {
-      padding: 20px;
-    }
+    // โหลดข้อมูลการจอง
+    loadBookingsFromFirebase(bookingList);
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+    // จัดการการส่งฟอร์ม
+    bookingForm.addEventListener('submit', function (e) {
+      e.preventDefault();
 
-    h1 {
-      margin-bottom: 20px;
-    }
+      const room = document.getElementById('room').value;
+      const name = document.getElementById('name').value;
+      const time = document.getElementById('time').value;
 
-    .form-group {
-      margin-bottom: 15px;
-    }
+      // บันทึกการจองไปที่ Firebase
+      saveBookingToFirebase(room, name, time);
 
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-    }
+      // เพิ่มข้อมูลใหม่ในตาราง (ในหน้าเว็บทันที)
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>${room}</td>
+        <td>${name}</td>
+        <td>${time}</td>
+      `;
+      bookingList.appendChild(newRow);
 
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    .booking-table {
-      margin-top: 30px;
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .booking-table th, .booking-table td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-
-    .booking-table th {
-      background-color: #f2f2f2;
-      text-align: left;
-    }
-
-    .empty {
-      text-align: center;
-      color: #888;
-    }
-  </style>
+      // ล้างฟอร์ม
+      bookingForm.reset();
+    });
+  </script>
 </head>
 <body>
   <header>
@@ -96,8 +47,6 @@
   <main>
     <div class="container">
       <h2>จองห้องประชุม</h2>
-
-      <!-- แบบฟอร์มการจอง -->
       <form id="bookingForm">
         <div class="form-group">
           <label for="room">เลือกห้องประชุม:</label>
@@ -122,9 +71,8 @@
         <button type="submit">ยืนยันการจอง</button>
       </form>
 
-      <!-- ตารางเวลาที่จองแล้ว -->
       <h2>รายการจอง</h2>
-      <table class="booking-table">
+      <table>
         <thead>
           <tr>
             <th>ห้องประชุม</th>
@@ -140,38 +88,5 @@
       </table>
     </div>
   </main>
-
-  <script>
-    // จัดการแบบฟอร์มการจอง
-    const bookingForm = document.getElementById('bookingForm');
-    const bookingList = document.getElementById('bookingList');
-
-    bookingForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      // ดึงค่าจากฟอร์ม
-      const room = document.getElementById('room').value;
-      const name = document.getElementById('name').value;
-      const time = document.getElementById('time').value;
-
-      // เพิ่มรายการจองลงในตาราง
-      const newRow = document.createElement('tr');
-      newRow.innerHTML = `
-        <td>${room}</td>
-        <td>${name}</td>
-        <td>${time}</td>
-      `;
-      bookingList.appendChild(newRow);
-
-      // ลบแถว "ยังไม่มีการจอง" หากมีการจอง
-      const emptyRow = document.querySelector('.empty');
-      if (emptyRow) {
-        emptyRow.remove();
-      }
-
-      // ล้างข้อมูลในฟอร์ม
-      bookingForm.reset();
-    });
-  </script>
 </body>
 </html>
