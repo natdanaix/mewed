@@ -1,6 +1,6 @@
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, query, where } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -19,6 +19,7 @@ const db = getFirestore(app);
 // Function to fetch and display bookings
 function fetchBookings() {
   const bookingList = document.getElementById('bookingList');
+  bookingList.innerHTML = ''; // Clear current list
 
   onSnapshot(collection(db, 'bookings'), (querySnapshot) => {
     bookingList.innerHTML = ''; // Clear table each time snapshot updates
@@ -34,53 +35,23 @@ function fetchBookings() {
 
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      addRowToTable(data);
+      const newRow = document.createElement('tr');
+
+      newRow.innerHTML = `
+        <td>${data.room}</td>
+        <td>${data.name}</td>
+        <td>${data.date}</td>
+        <td>${data.startTime}</td>
+        <td>${data.endTime}</td>
+      `;
+
+      bookingList.appendChild(newRow);
     });
-  }, (error) => {
-    console.error('Error fetching bookings:', error.message);
-    alert('เกิดข้อผิดพลาดในการดึงข้อมูล');
   });
 }
 
-// Helper function to add a row to the booking table
-function addRowToTable(data) {
-  const bookingList = document.getElementById('bookingList');
-  const newRow = document.createElement('tr');
-
-  newRow.innerHTML = `
-    <td>${data.room}</td>
-    <td>${data.name}</td>
-    <td>${data.date}</td>
-    <td>${data.startTime}</td>
-    <td>${data.endTime}</td>
-  `;
-
-  bookingList.appendChild(newRow);
-}
-
-// Validate if the new booking overlaps with existing bookings
-async function isBookingOverlap(room, date, startTime, endTime) {
-  const bookingsQuery = query(
-    collection(db, 'bookings'),
-    where('room', '==', room),
-    where('date', '==', date)
-  );
-
-  const querySnapshot = await bookingsQuery.get();
-
-  for (const doc of querySnapshot.docs) {
-    const data = doc.data();
-    if (
-      (startTime >= data.startTime && startTime < data.endTime) || 
-      (endTime > data.startTime && endTime <= data.endTime) ||
-      (startTime <= data.startTime && endTime >= data.endTime)
-    ) {
-      return true; // Overlap detected
-    }
-  }
-
-  return false;
-}
+// Call fetchBookings when the page loads
+document.addEventListener('DOMContentLoaded', fetchBookings);
 
 // Handle form submission
 document.getElementById('bookingForm').addEventListener('submit', async function (event) {
@@ -105,12 +76,6 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     return;
   }
 
-  // Check for booking overlap
-  if (await isBookingOverlap(room, date, startTime, endTime)) {
-    alert('ช่วงเวลาที่เลือกทับซ้อนกับการจองอื่น');
-    return;
-  }
-
   try {
     // Save booking to Firebase Firestore
     await addDoc(collection(db, 'bookings'), {
@@ -130,5 +95,3 @@ document.getElementById('bookingForm').addEventListener('submit', async function
   }
 });
 
-// Call fetchBookings when the page loads
-document.addEventListener('DOMContentLoaded', fetchBookings);
