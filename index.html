@@ -6,16 +6,18 @@
   <title>ระบบจองห้องประชุม</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f9;
+      background: linear-gradient(to right, #e3f2fd, #e1bee7);
+      color: #333;
     }
     header {
       background-color: #4CAF50;
       color: white;
       text-align: center;
       padding: 1rem 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     main {
       padding: 20px;
@@ -25,18 +27,21 @@
       margin: 0 auto;
       background: white;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     h1, h2 {
+      text-align: center;
       margin-bottom: 20px;
     }
     .form-group {
       margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
     }
     .form-group label {
-      display: block;
       margin-bottom: 5px;
+      font-weight: bold;
     }
     .form-group input,
     .form-group select {
@@ -44,14 +49,23 @@
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #4CAF50;
+      outline: none;
     }
     button {
       background-color: #4CAF50;
       color: white;
-      padding: 10px 15px;
+      padding: 10px 20px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
     }
     button:hover {
       background-color: #45a049;
@@ -60,18 +74,35 @@
       margin-top: 30px;
       width: 100%;
       border-collapse: collapse;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .booking-table th, .booking-table td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 12px;
+      text-align: left;
     }
     .booking-table th {
       background-color: #f2f2f2;
-      text-align: left;
+    }
+    .booking-table tr:hover {
+      background-color: #f9f9f9;
     }
     .empty {
       text-align: center;
       color: #888;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      .form-group input,
+      .form-group select {
+        font-size: 0.9rem;
+      }
+      button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
@@ -84,7 +115,6 @@
     <div class="container">
       <h2>จองห้องประชุม</h2>
 
-      <!-- ฟอร์มการจอง -->
       <form id="bookingForm">
         <div class="form-group">
           <label for="room">เลือกห้องประชุม:</label>
@@ -114,7 +144,6 @@
         <button type="submit">ยืนยันการจอง</button>
       </form>
 
-      <!-- ตารางการจอง -->
       <h2>รายการจอง</h2>
       <table class="booking-table">
         <thead>
@@ -135,7 +164,6 @@
     </div>
   </main>
 
-  <!-- Import Firebase App and Firestore -->
   <script type="module" src="./index.js"></script>
 </body>
 </html>
