@@ -17,10 +17,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // บันทึกข้อมูลการจองไปยัง Firestore
-export async function saveBookingToFirestore(room, name, date, time) {
+export async function saveBookingToFirestore(room, name, time) {
   try {
     const bookingsRef = collection(db, "bookings");
-    await addDoc(bookingsRef, { room, name, date, time });
+    await addDoc(bookingsRef, { room, name, time });
     console.log("Booking added successfully!");
   } catch (error) {
     console.error("Error adding booking:", error);
@@ -38,21 +38,17 @@ export function loadBookingsFromFirestore(bookingListElement) {
     if (snapshot.empty) {
       bookingListElement.innerHTML = `
         <tr class="empty">
-          <td colspan="4">ยังไม่มีการจอง</td>
+          <td colspan="3">ยังไม่มีการจอง</td>
         </tr>
       `;
     } else {
       snapshot.forEach((doc) => {
-        const data = doc.data();
-        console.log("Data retrieved:", data);
-        const { room, name, date, time } = data;
-
+        const { room, name, time } = doc.data();
         const newRow = document.createElement("tr");
         newRow.innerHTML = `
-          <td>${room || "ไม่ระบุ"}</td>
-          <td>${name || "ไม่ระบุ"}</td>
-          <td>${date || "ไม่ระบุ"}</td>
-          <td>${time || "ไม่ระบุ"}</td>
+          <td>${room}</td>
+          <td>${name}</td>
+          <td>${time}</td>
         `;
         bookingListElement.appendChild(newRow);
       });
@@ -74,13 +70,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const room = document.getElementById("room").value;
     const name = document.getElementById("name").value;
-    const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
 
-    console.log("Form Data:", { room, name, date, time });
-
     // บันทึกข้อมูลการจองไปยัง Firestore
-    saveBookingToFirestore(room, name, date, time);
+    saveBookingToFirestore(room, name, time);
 
     // ล้างฟอร์มหลังการส่ง
     bookingForm.reset();
