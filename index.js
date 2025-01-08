@@ -27,7 +27,6 @@ export async function saveBookingToFirestore(room, name, date, time) {
   }
 }
 
-
 // โหลดข้อมูลการจองจาก Firestore
 export function loadBookingsFromFirestore(bookingListElement) {
   const bookingsRef = collection(db, "bookings");
@@ -44,20 +43,22 @@ export function loadBookingsFromFirestore(bookingListElement) {
       `;
     } else {
       snapshot.forEach((doc) => {
-        const { room, name, date, time } = doc.data();
+        const data = doc.data();
+        console.log("Data retrieved:", data);
+        const { room, name, date, time } = data;
+
         const newRow = document.createElement("tr");
         newRow.innerHTML = `
-          <td>${room}</td>
-          <td>${name}</td>
-          <td>${date}</td>
-          <td>${time}</td>
+          <td>${room || "ไม่ระบุ"}</td>
+          <td>${name || "ไม่ระบุ"}</td>
+          <td>${date || "ไม่ระบุ"}</td>
+          <td>${time || "ไม่ระบุ"}</td>
         `;
         bookingListElement.appendChild(newRow);
       });
     }
   });
 }
-
 
 // ฟังก์ชันการจัดการ DOM
 document.addEventListener("DOMContentLoaded", () => {
@@ -73,10 +74,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const room = document.getElementById("room").value;
     const name = document.getElementById("name").value;
+    const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
 
+    console.log("Form Data:", { room, name, date, time });
+
     // บันทึกข้อมูลการจองไปยัง Firestore
-    saveBookingToFirestore(room, name, time);
+    saveBookingToFirestore(room, name, date, time);
 
     // ล้างฟอร์มหลังการส่ง
     bookingForm.reset();
