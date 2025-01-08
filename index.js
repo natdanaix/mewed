@@ -28,7 +28,45 @@ function createDayElement(day, bookingInfo) {
 
   return dayElement;
 }
+const currentMonthDisplay = document.getElementById("currentMonth");
+const calendarGrid = document.getElementById("calendar");
 
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+
+function renderCalendar(month, year) {
+  // อัปเดตชื่อเดือน
+  const monthNames = [
+    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+  currentMonthDisplay.textContent = `${monthNames[month]} ${year}`;
+  
+  // ล้างข้อมูลเก่าของปฏิทิน
+  calendarGrid.innerHTML = "";
+
+  // โค้ดสร้างวันที่ในเดือนนี้ (คุณสามารถเพิ่มโค้ดนี้เอง)
+}
+document.getElementById("prevMonth").addEventListener("click", () => {
+  currentMonth--;
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+  renderCalendar(currentMonth, currentYear);
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+  currentMonth++;
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+  renderCalendar(currentMonth, currentYear);
+});
+
+// เริ่มต้นแสดงปฏิทินเดือนปัจจุบัน
+renderCalendar(currentMonth, currentYear);
 // ฟังก์ชันสร้างปฏิทิน
 async function generateCalendar() {
   const calendar = document.getElementById("calendar");
