@@ -28,6 +28,9 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+    h1, h2 {
+      margin-bottom: 20px;
+    }
     .form-group {
       margin-bottom: 15px;
     }
@@ -80,6 +83,8 @@
   <main>
     <div class="container">
       <h2>จองห้องประชุม</h2>
+
+      <!-- ฟอร์มการจอง -->
       <form id="bookingForm">
         <div class="form-group">
           <label for="room">เลือกห้องประชุม:</label>
@@ -100,6 +105,8 @@
         </div>
         <button type="submit">ยืนยันการจอง</button>
       </form>
+
+      <!-- ตารางการจอง -->
       <h2>รายการจอง</h2>
       <table class="booking-table">
         <thead>
@@ -118,76 +125,7 @@
     </div>
   </main>
 
-  <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js"></script>
-
-
-  <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyB31LuOWt2kYXWF-M4GFBr2_STNWmtwMGU",
-      authDomain: "meeting-c1e77.firebaseapp.com",
-      databaseURL: "https://meeting-c1e77-default-rtdb.firebaseio.com",
-      projectId: "meeting-c1e77",
-      storageBucket: "meeting-c1e77.appspot.com",
-      messagingSenderId: "316077175994",
-      appId: "1:316077175994:web:e4e88fa3ee354eeca87e83"
-    };
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    // Save Booking to Firebase
-    function saveBookingToFirebase(room, name, time) {
-      const bookingsRef = database.ref('bookings/');
-      bookingsRef.push({ room, name, time });
-    }
-
-    // Load Bookings from Firebase
-    function loadBookingsFromFirebase(bookingListElement) {
-      const bookingsRef = database.ref('bookings/');
-      bookingsRef.on('value', (snapshot) => {
-        const bookings = snapshot.val();
-        bookingListElement.innerHTML = '';
-
-        if (bookings) {
-          for (let key in bookings) {
-            const { room, name, time } = bookings[key];
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `<td>${room}</td><td>${name}</td><td>${time}</td>`;
-            bookingListElement.appendChild(newRow);
-          }
-        } else {
-          bookingListElement.innerHTML = `
-            <tr class="empty">
-              <td colspan="3">ยังไม่มีการจอง</td>
-            </tr>
-          `;
-        }
-      });
-    }
-
-    // Initialize App
-    document.addEventListener('DOMContentLoaded', () => {
-      const bookingForm = document.getElementById('bookingForm');
-      const bookingList = document.getElementById('bookingList');
-
-      loadBookingsFromFirebase(bookingList);
-
-      bookingForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const room = document.getElementById('room').value;
-        const name = document.getElementById('name').value;
-        const time = document.getElementById('time').value;
-
-        saveBookingToFirebase(room, name, time);
-
-        bookingForm.reset();
-      });
-    });
-  </script>
+  <!-- Import Firebase App and Firestore -->
+  <script type="module" src="./index.js"></script>
 </body>
 </html>
