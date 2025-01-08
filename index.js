@@ -1,6 +1,4 @@
 // Import Firebase modules
-import { Calendar } from 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.js';
-
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
 import { getFirestore, collection, addDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
 
@@ -56,52 +54,44 @@ function fetchBookings() {
 document.addEventListener('DOMContentLoaded', fetchBookings);
 
 // Handle form submission
-document.addEventListener('DOMContentLoaded', () => {
-  const calendarEl = document.getElementById('calendar');
+document.getElementById('bookingForm').addEventListener('submit', async function (event) {
+  event.preventDefault();
 
-  // สร้างปฏิทิน
-  const calendar = new Calendar(calendarEl, {
-    initialView: 'dayGridMonth', // แสดงมุมมองแบบเดือน
-    locale: 'th', // ตั้งค่าภาษาไทย
-    headerToolbar: {
-      left: 'prev,next today', // ปุ่มย้อนกลับ ถัดไป และวันนี้
-      center: 'title', // ชื่อเดือน
-      right: '' // ซ่อนปุ่มเปลี่ยนมุมมองอื่น
-    },
-    events: [] // จองกิจกรรม
-  });
+  // Get form values
+  const room = document.getElementById('room').value;
+  const name = document.getElementById('name').value;
+  const date = document.getElementById('date').value;
+  const startTime = document.getElementById('startTime').value;
+  const endTime = document.getElementById('endTime').value;
 
-  calendar.render();
+  // Validate input
+  if (!room || !name || !date || !startTime || !endTime) {
+    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    return;
+  }
 
-  // จัดการฟอร์มการจอง
-  const bookingForm = document.getElementById('bookingForm');
-  bookingForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+  // Check if start time is before end time
+  if (startTime >= endTime) {
+    alert('เวลาเริ่มต้นต้องน้อยกว่าเวลาสิ้นสุด');
+    return;
+  }
 
-    // รับค่าจากฟอร์ม
-    const room = document.getElementById('room').value;
-    const name = document.getElementById('name').value;
-    const date = document.getElementById('date').value;
-    const startTime = document.getElementById('startTime').value;
-    const endTime = document.getElementById('endTime').value;
-
-    if (!room || !name || !date || !startTime || !endTime) {
-      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-      return;
-    }
-
-    const start = `${date}T${startTime}`;
-    const end = `${date}T${endTime}`;
-
-    // เพิ่มกิจกรรมลงในปฏิทิน
-    calendar.addEvent({
-      title: `${room} - ${name}`,
-      start,
-      end
+  try {
+    // Save booking to Firebase Firestore
+    await addDoc(collection(db, 'bookings'), {
+      room,
+      name,
+      date,
+      startTime,
+      endTime,
+      createdAt: new Date().toISOString(),
     });
 
-    alert('การจองสำเร็จ!');
-    bookingForm.reset();
-  });
+    alert('บันทึกการจองสำเร็จ!');
+    this.reset(); // Reset form
+  } catch (error) {
+    console.error('Error adding document:', error.message);
+    alert(`เกิดข้อผิดพลาด: ${error.message}`);
+  }
 });
 
