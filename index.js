@@ -104,40 +104,43 @@ async function loadBookings() {
 }
 
 // ฟังก์ชันจัดการการส่งฟอร์ม
-document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+// ตัวอย่างโค้ดการแสดงข้อมูลในปฏิทิน
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  const room = document.getElementById("room").value;
-  const name = document.getElementById("name").value;
-  const date = document.getElementById("date").value;
-  const startTime = document.getElementById("startTime").value;
-  const endTime = document.getElementById("endTime").value;
+  const room = document.getElementById('room').value;
+  const name = document.getElementById('name').value;
+  const date = document.getElementById('date').value;
+  const startTime = document.getElementById('startTime').value;
+  const endTime = document.getElementById('endTime').value;
 
-  try {
-    // ตรวจสอบการจองซ้ำ
-    const isDuplicate = await checkDuplicateBooking(room, date, startTime, endTime);
+  // อัปเดตตารางรายการจอง
+  const bookingList = document.getElementById('bookingList');
+  const emptyRow = bookingList.querySelector('.empty');
+  if (emptyRow) emptyRow.remove();
 
-    if (isDuplicate) {
-      alert("ห้องประชุมในช่วงเวลานี้ถูกจองไว้แล้ว กรุณาเลือกช่วงเวลาอื่น");
-    } else {
-      // เพิ่มข้อมูลการจองใหม่
-      await addDoc(collection(db, "bookings"), {
-        room,
-        name,
-        date,
-        startTime,
-        endTime,
-      });
+  const newRow = document.createElement('tr');
+  newRow.innerHTML = `
+    <td>${room}</td>
+    <td>${name}</td>
+    <td>${date}</td>
+    <td>${startTime}</td>
+    <td>${endTime}</td>
+  `;
+  bookingList.appendChild(newRow);
 
-      alert("จองสำเร็จ!");
-      await loadBookings(); // โหลดรายการจองใหม่
-      await generateCalendar(); // อัปเดตปฏิทิน
-    }
-  } catch (error) {
-    console.error("เกิดข้อผิดพลาดในการจอง: ", error);
-    alert("ไม่สามารถจองได้ โปรดลองอีกครั้ง");
+  // อัปเดตปฏิทิน
+  const calendarDay = document.querySelector(`.calendar-day[data-date="${date}"]`);
+  if (calendarDay) {
+    const bookingInfo = document.createElement('div');
+    bookingInfo.className = 'booking-info';
+    bookingInfo.textContent = `${name} (${startTime} - ${endTime})`;
+    calendarDay.appendChild(bookingInfo);
+  } else {
+    alert('ไม่พบวันที่ในปฏิทิน');
   }
 });
+
 
 // ฟังก์ชันตรวจสอบการจองซ้ำ
 async function checkDuplicateBooking(room, date, startTime, endTime) {
