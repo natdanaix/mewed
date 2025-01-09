@@ -13,6 +13,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ฟังก์ชันสำหรับอัปเดตหัวข้อปฏิทิน
+function updateCalendarHeader() {
+  const calendarHeader = document.querySelector(".container h2");
+  const now = new Date();
+
+  // ชื่อเดือนภาษาไทย
+  const months = [
+    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+
+  const monthName = months[now.getMonth()];
+  const year = now.getFullYear();
+
+  // อัปเดตข้อความหัวข้อปฏิทิน
+  calendarHeader.textContent = `ปฏิทินการจอง - ${monthName} ${year}`;
+}
+
+// ฟังก์ชันสร้างปฏิทิน
 async function generateCalendar() {
   const calendar = document.getElementById("calendar");
   const now = new Date();
@@ -90,6 +109,7 @@ document.getElementById("bookingForm").addEventListener("submit", async (e) => {
 });
 
 window.onload = async () => {
+  updateCalendarHeader(); // อัปเดตชื่อหัวข้อปฏิทิน
   await generateCalendar();
   await loadBookings();
 };
