@@ -33,18 +33,17 @@
       margin-top: 20px;
     }
     .calendar-day .date {
-  font-weight: bold;
-  margin-bottom: 10px;
-  font-size: 1.3rem; /* เพิ่มขนาดข้อความ */
-}
-
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 1.3rem; /* เพิ่มขนาดข้อความ */
+    }
     .calendar-day {
       padding: 10px;
       background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 8px;
       text-align: center;
-       font-size: 0.8rem; /* ปรับขนาดข้อความให้เล็กลง */
+      font-size: 0.8rem; /* ปรับขนาดข้อความให้เล็กลง */
     }
     .calendar-day.booked {
       background-color: #ffe6e6;
@@ -77,33 +76,35 @@
     <h1>ระบบจองห้องประชุม</h1>
   </header>
   <main>
-<div class="container">
-  <h2>จองห้องประชุม</h2>
-  <form id="bookingForm">
-    <label for="room">เลือกห้องประชุม:</label>
-    <select id="room" required>
-      <option value="">-- กรุณาเลือก --</option>
-      <option value="ห้องประชุมเล็ก">ห้องประชุมเล็ก</option>
-    </select>
+    <!-- Section: จองห้องประชุม -->
+    <div class="container">
+      <h2>จองห้องประชุม</h2>
+      <form id="bookingForm">
+        <label for="room">เลือกห้องประชุม:</label>
+        <select id="room" required>
+          <option value="">-- กรุณาเลือก --</option>
+          <option value="ห้องประชุมเล็ก">ห้องประชุมเล็ก</option>
+        </select>
 
-    <label for="name">ชื่อผู้จอง:</label>
-    <input type="text" id="name" required>
-    <label for="date">วันที่:</label>
-    <input type="date" id="date" required>
-    <label for="startTime">เวลาเริ่มต้น:</label>
-    <input type="time" id="startTime" required>
-    <label for="endTime">เวลาสิ้นสุด:</label>
-    <input type="time" id="endTime" required>
-    <button type="submit">ยืนยันการจอง</button>
-  </form>
-</div>
+        <label for="name">ชื่อผู้จอง:</label>
+        <input type="text" id="name" required>
+        <label for="date">วันที่:</label>
+        <input type="date" id="date" required>
+        <label for="startTime">เวลาเริ่มต้น:</label>
+        <input type="time" id="startTime" required>
+        <label for="endTime">เวลาสิ้นสุด:</label>
+        <input type="time" id="endTime" required>
+        <button type="submit">ยืนยันการจอง</button>
+      </form>
+    </div>
 
-<div class="container">
-  <h2>ปฏิทินการจอง</h2>
-  <div id="calendar" class="calendar-grid"></div>
-</div>
+    <!-- Section: ปฏิทินการจอง -->
+    <div class="container">
+      <h2>ปฏิทินการจอง</h2>
+      <div id="calendar" class="calendar-grid"></div>
+    </div>
 
-   
+    <!-- Section: รายการจอง -->
     <div class="container">
       <h2>รายการจอง</h2>
       <table>
