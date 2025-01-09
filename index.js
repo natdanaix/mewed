@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
 import { addDoc, collection, getDocs, getFirestore, query, where } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+import { deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB31LuOWt2kYXWF-M4GFBr2_STNWmtwMGU",
@@ -65,14 +66,13 @@ async function loadBookings() {
 
   const querySnapshot = await getDocs(collection(db, "bookings"));
 
-  // ดึงข้อมูลทั้งหมดจาก Firestore และเก็บในอาร์เรย์
   const bookings = [];
   querySnapshot.forEach(doc => {
-    const data = doc.data();
+    const data = { id: doc.id, ...doc.data() }; // เก็บ ID ไว้ในแต่ละรายการ
     bookings.push(data);
   });
 
-  // เรียงลำดับข้อมูลตามวันที่ที่ใกล้ที่สุด
+  // เรียงลำดับข้อมูลตามวันที่
   bookings.sort((a, b) => new Date(a.date) - new Date(b.date));
 
   // เพิ่มข้อมูลลงในตาราง
@@ -84,6 +84,7 @@ async function loadBookings() {
       <td>${data.date}</td>
       <td>${data.startTime}</td>
       <td>${data.endTime}</td>
+      <td><button class="delete-btn" data-id="${data.id}">ลบ</button></td>
     `;
     bookingList.appendChild(row);
   });
@@ -92,11 +93,34 @@ async function loadBookings() {
   if (bookings.length === 0) {
     bookingList.innerHTML = `
       <tr class="empty">
-        <td colspan="5">ยังไม่มีการจอง</td>
+        <td colspan="6">ยังไม่มีการจอง</td>
       </tr>
     `;
   }
+
+  // เพิ่ม event listener ให้ปุ่มลบ
+  const deleteButtons = document.querySelectorAll(".delete-btn");
+  deleteButtons.forEach(button => {
+    button.addEventListener("click", async (e) => {
+      const bookingId = e.target.getAttribute("data-id");
+      await deleteBooking(bookingId);
+    });
+  });
 }
+
+async function deleteBooking(bookingId) {
+  if (!confirm("คุณต้องการลบการจองนี้ใช่หรือไม่?")) return; // ยืนยันก่อนลบ
+  try {
+    await deleteDoc(doc(db, "bookings", bookingId));
+    alert("ลบการจองสำเร็จ!");
+    await generateCalendar(); // อัปเดตปฏิทิน
+    await loadBookings(); // อัปเดตตาราง
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการลบการจอง:", error);
+    alert("ไม่สามารถลบการจองได้");
+  }
+}
+
 
 
 async function addBooking(room, name, date, startTime, endTime) {
