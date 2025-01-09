@@ -29,7 +29,7 @@ function updateCalendarHeader() {
   const year = now.getFullYear();
 
   // อัปเดตข้อความหัวข้อปฏิทิน
-  calendarHeader.textContent = `ปฏิทินการจอง - ${monthName} ${year}`;
+  calendarHeader.textContent = `การจองห้องประชุม - ${monthName} ${year}`;
 }
 
 // ฟังก์ชันสร้างปฏิทิน
