@@ -93,17 +93,18 @@ button:hover {
 }
 
 /* ปฏิทิน */
-
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto 1fr;
   gap: 10px;
   margin-top: 20px;
-  justify-content: center; /* จัดให้อยู่กึ่งกลางในแนวนอน */
-  background-color: #e3f2fd; /* สีพื้นหลัง */
-  padding: 20px; /* เพิ่มระยะห่างระหว่างกล่อง */
-  border-radius: 12px; /* ทำขอบมน */
+  justify-content: center;
+  background-color: #e3f2fd;
+  padding: 20px;
+  border-radius: 12px;
 }
+
 .calendar-day-name {
   font-weight: bold;
   text-align: center;
@@ -112,9 +113,6 @@ button:hover {
   border: 1px solid #ddd;
   border-radius: 8px;
   color: #333;
-}
-.calendar-grid {
-  grid-template-rows: auto; /* เพิ่มเพื่อรองรับแถวของชื่อวัน */
 }
 
 .calendar-day {
@@ -134,15 +132,11 @@ button:hover {
   font-weight: bold;
   margin-bottom: 10px;
 }
-    .calendar-day.booked {
-  background-color: #ffe6e6; /* สีพื้นหลังเมื่อมีการจอง */
-  border-color: #ff0000; /* เส้นขอบสีแดง */
+.calendar-day.booked {
+  background-color: #ffe6e6;
+  border-color: #ff0000;
 }
 
-
-.booking-info-container {
-  margin-top: 10px;
-}
 .calendar-container {
   max-width: 800px;
   margin: 20px auto;
@@ -153,24 +147,8 @@ button:hover {
 }
 
 .calendar-container h2 {
-  text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+  text-align: center;
 }
-
-.booking-info {
-  font-size: 0.8rem; /* ปรับขนาดข้อความภายในข้อมูลการจองให้เล็กลง */
-  background-color: #e3f2fd;
-  padding: 5px;
-  border-radius: 5px;
-  margin-bottom: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.booking-info-container {
-  margin-top: 10px;
-}
-
-
-
   </style>
 </head>
 <body>
@@ -179,23 +157,25 @@ button:hover {
   </header>
 
   <main>
-  
- <div class="calendar-container">
-  <h2>ปฏิทินการจอง</h2>
-<div id="calendar" class="calendar-grid">
-  <div class="calendar-day-name">วันจันทร์</div>
-  <div class="calendar-day-name">วันอังคาร</div>
-  <div class="calendar-day-name">วันพุธ</div>
-  <div class="calendar-day-name">วันพฤหัสบดี</div>
-  <div class="calendar-day-name">วันศุกร์</div>
-  <div class="calendar-day-name">วันเสาร์</div>
-  <div class="calendar-day-name">วันอาทิตย์</div>
-  <!-- ช่องของวันที่ -->
-</div>
+    <div class="calendar-container">
+      <h2>ปฏิทินการจอง</h2>
+      <div id="calendar" class="calendar-grid">
+        <!-- ชื่อวัน -->
+        <div class="calendar-day-name">วันจันทร์</div>
+        <div class="calendar-day-name">วันอังคาร</div>
+        <div class="calendar-day-name">วันพุธ</div>
+        <div class="calendar-day-name">วันพฤหัสบดี</div>
+        <div class="calendar-day-name">วันศุกร์</div>
+        <div class="calendar-day-name">วันเสาร์</div>
+        <div class="calendar-day-name">วันอาทิตย์</div>
+        <!-- ช่องของวันที่ -->
+        <div class="calendar-day"><div class="date">1</div></div>
+        <div class="calendar-day"><div class="date">2</div></div>
+        <!-- เพิ่มช่องวันที่เพิ่มเติม -->
+      </div>
+    </div>
 
-
-
-      <div class="container">
+    <div class="container">
       <h2>จองห้องประชุม</h2>
       <form id="bookingForm">
         <div class="form-group">
@@ -226,8 +206,6 @@ button:hover {
         <button type="submit">ยืนยันการจอง</button>
       </form>
 
-
-      
       <h2>รายการจอง</h2>
       <table class="booking-table">
         <thead>
@@ -246,11 +224,6 @@ button:hover {
         </tbody>
       </table>
     </div>
-
-
-
-    
- 
   </main>
 
   <script type="module" src="./index.js"></script>
