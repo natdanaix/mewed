@@ -142,7 +142,10 @@ button:hover {
   <main>
     <div class="container">
       <h2>จองห้องประชุม</h2>
-<a href="calendar.html" style="display: inline-block; margin-bottom: 20px; color: #4CAF50; font-weight: bold;">ดูปฏิทินการจอง</a>
+   <div class="calendar-container">
+      <h2>ปฏิทินการจอง</h2>
+      <div id="calendar" class="calendar-grid"></div>
+    </div>
       <form id="bookingForm">
         <div class="form-group">
           <label for="room">เลือกห้องประชุม:</label>
@@ -172,6 +175,8 @@ button:hover {
         <button type="submit">ยืนยันการจอง</button>
       </form>
 
+
+      
       <h2>รายการจอง</h2>
       <table class="booking-table">
         <thead>
@@ -191,10 +196,10 @@ button:hover {
       </table>
     </div>
 
-    <div class="calendar-container">
-      <h2>ปฏิทินการจอง</h2>
-      <div id="calendar" class="calendar-grid"></div>
-    </div>
+
+
+    
+ 
   </main>
 
   <script type="module" src="./index.js"></script>
