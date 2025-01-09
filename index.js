@@ -103,8 +103,6 @@ async function loadBookings() {
   }
 }
 
-// ฟังก์ชันจัดการการส่งฟอร์ม
-// ตัวอย่างโค้ดการแสดงข้อมูลในปฏิทิน
 document.getElementById('bookingForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
@@ -132,14 +130,16 @@ document.getElementById('bookingForm').addEventListener('submit', function(e) {
   // อัปเดตปฏิทิน
   const calendarDay = document.querySelector(`.calendar-day[data-date="${date}"]`);
   if (calendarDay) {
+    const bookingInfoContainer = calendarDay.querySelector('.booking-info-container');
     const bookingInfo = document.createElement('div');
     bookingInfo.className = 'booking-info';
     bookingInfo.textContent = `${name} (${startTime} - ${endTime})`;
-    calendarDay.appendChild(bookingInfo);
+    bookingInfoContainer.appendChild(bookingInfo);
   } else {
     alert('ไม่พบวันที่ในปฏิทิน');
   }
 });
+
 
 
 // ฟังก์ชันตรวจสอบการจองซ้ำ
