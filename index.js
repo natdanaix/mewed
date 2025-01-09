@@ -157,6 +157,13 @@ async function checkDuplicateBooking(room, date, startTime, endTime) {
   }
 }
 
+
+document.querySelectorAll('.calendar-day').forEach(day => {
+  if (day.textContent.trim() !== 'ไม่มีการจอง') {
+    day.classList.add('booked');
+  }
+});
+
 // การจัดการการส่งฟอร์ม
 document.getElementById('bookingForm').addEventListener('submit', async function (e) {
   e.preventDefault();
