@@ -62,15 +62,42 @@ async function generateCalendar() {
 async function loadBookings() {
   const bookingList = document.getElementById("bookingList");
   bookingList.innerHTML = "";
+
   const querySnapshot = await getDocs(collection(db, "bookings"));
 
+  // ดึงข้อมูลทั้งหมดจาก Firestore และเก็บในอาร์เรย์
+  const bookings = [];
   querySnapshot.forEach(doc => {
     const data = doc.data();
+    bookings.push(data);
+  });
+
+  // เรียงลำดับข้อมูลตามวันที่ที่ใกล้ที่สุด
+  bookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // เพิ่มข้อมูลลงในตาราง
+  bookings.forEach(data => {
     const row = document.createElement("tr");
-    row.innerHTML = `<td>${data.room}</td><td>${data.name}</td><td>${data.date}</td><td>${data.startTime}</td><td>${data.endTime}</td>`;
+    row.innerHTML = `
+      <td>${data.room}</td>
+      <td>${data.name}</td>
+      <td>${data.date}</td>
+      <td>${data.startTime}</td>
+      <td>${data.endTime}</td>
+    `;
     bookingList.appendChild(row);
   });
+
+  // ถ้าไม่มีข้อมูล ให้แสดงข้อความว่างเปล่า
+  if (bookings.length === 0) {
+    bookingList.innerHTML = `
+      <tr class="empty">
+        <td colspan="5">ยังไม่มีการจอง</td>
+      </tr>
+    `;
+  }
 }
+
 
 async function addBooking(room, name, date, startTime, endTime) {
   await addDoc(collection(db, "bookings"), { room, name, date, startTime, endTime });
