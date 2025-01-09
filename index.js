@@ -103,42 +103,28 @@ async function loadBookings() {
   }
 }
 
-document.getElementById('bookingForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+document.getElementById('bookingForm').addEventListener('submit', function (e) {
+    e.preventDefault();
 
-  const room = document.getElementById('room').value;
-  const name = document.getElementById('name').value;
-  const date = document.getElementById('date').value;
-  const startTime = document.getElementById('startTime').value;
-  const endTime = document.getElementById('endTime').value;
+    const room = document.getElementById('room').value;
+    const name = document.getElementById('name').value;
+    const date = document.getElementById('date').value;
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
 
-  // อัปเดตตารางรายการจอง
-  const bookingList = document.getElementById('bookingList');
-  const emptyRow = bookingList.querySelector('.empty');
-  if (emptyRow) emptyRow.remove();
-
-  const newRow = document.createElement('tr');
-  newRow.innerHTML = `
-    <td>${room}</td>
-    <td>${name}</td>
-    <td>${date}</td>
-    <td>${startTime}</td>
-    <td>${endTime}</td>
-  `;
-  bookingList.appendChild(newRow);
-
-  // อัปเดตปฏิทิน
-  const calendarDay = document.querySelector(`.calendar-day[data-date="${date}"]`);
-  if (calendarDay) {
-    const bookingInfoContainer = calendarDay.querySelector('.booking-info-container');
-    const bookingInfo = document.createElement('div');
-    bookingInfo.className = 'booking-info';
-    bookingInfo.textContent = `${name} (${startTime} - ${endTime})`;
-    bookingInfoContainer.appendChild(bookingInfo);
-  } else {
-    alert('ไม่พบวันที่ในปฏิทิน');
-  }
+    // ค้นหา element ของวันในปฏิทินที่ตรงกับวันที่จอง
+    const calendarDay = document.querySelector(`.calendar-day[data-date="${date}"]`);
+    if (calendarDay) {
+        const bookingInfoContainer = calendarDay.querySelector('.booking-info-container');
+        const bookingInfo = document.createElement('div');
+        bookingInfo.className = 'booking-info';
+        bookingInfo.textContent = `${name} (${startTime} - ${endTime})`;
+        bookingInfoContainer.appendChild(bookingInfo);
+    } else {
+        alert('ไม่พบวันที่ในปฏิทิน');
+    }
 });
+
 
 
 
