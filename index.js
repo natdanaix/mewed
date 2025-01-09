@@ -175,6 +175,12 @@ document.getElementById('bookingForm').addEventListener('submit', async function
   }
 
   // เพิ่มการจองใหม่ใน Firestore
+  const calendarDay = document.querySelector(`.calendar-day[data-date="${date}"]`);
+  if (!calendarDay) {
+    alert("ไม่พบวันที่ในปฏิทิน");
+    return;
+  }
+
   await addBooking(room, name, date, startTime, endTime);
 });
 
