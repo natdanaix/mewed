@@ -51,7 +51,7 @@ async function generateCalendar() {
 
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    const bookingInfo = bookings[dateStr]?.map(booking => `<div>${booking.name} (${booking.startTime}-${booking.endTime})</div>`).join("") || "ไม่มีการจอง";
+    const bookingInfo = bookings[dateStr]?.map(booking => `<div>${booking.name} (${booking.startTime}-${booking.endTime})</div>`).join("") || "ว่าง";
     const dayElement = document.createElement("div");
     dayElement.className = "calendar-day";
     if (bookings[dateStr]) dayElement.classList.add("booked");
